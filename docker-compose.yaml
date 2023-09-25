@@ -1,0 +1,11 @@
+version: "3.2"
+services:
+  node-ws:
+    container_name: "node-ws"
+    build:
+      dockerfile: ws.Dockerfile
+      context: .
+      args:
+        CMD_SERVICE: ws
+    ports:
+      - 8080:8080
