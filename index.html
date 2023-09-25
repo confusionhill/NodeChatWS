@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebSocket Chat</title>
+</head>
+<body>
+  <h1>WebSocket Chat</h1>
+  <div id="chat">
+    <textarea id="messages" readonly></textarea>
+    <input type="text" id="input" placeholder="Type a message..." />
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <script>
+    const socket = new WebSocket('ws://localhost:8080');
+    const messagesTextarea = document.getElementById('messages');
+    const inputField = document.getElementById('input');
+    const textDecoder = new TextDecoder('utf-8');
+
+    socket.onmessage = (event) => {
+      const message = event.data; // This should now correctly be treated as text
+      console.log(message);
+      // Append the message to the textarea
+      messagesTextarea.value += 'makan bang' + message + '\n';
+    };
+
+    function sendMessage() {
+      const message = inputField.value;
+      socket.send(message);
+      inputField.value = '';
+    }
+  </script>
+</body>
+</html>
