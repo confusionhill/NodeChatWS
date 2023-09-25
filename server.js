@@ -1,6 +1,8 @@
-require('@instana/collector')();
+//require('@instana/collector')();
 const prometheus = require('prom-client');
 const WebSocket = require('ws');
+const express = require('express');
+const app = express();
 
 const server = new WebSocket.Server({ port: 8081 });
 const clients = new Set();
@@ -18,6 +20,12 @@ function userLoggedOut() {
   onlineUsersGauge.dec();
 }
 
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', prometheus.register.contentType);
+  let resp = await prometheus.register.metrics()
+  res.end(resp);
+});
+
 server.on('connection', (socket) => {
   console.log('Client connected');
   userLoggedIn();
@@ -26,14 +34,6 @@ server.on('connection', (socket) => {
   socket.on('message', (message) => {
     clients.forEach((client) => {
       if (client !== socket) {
-        // const metrics = {
-        //   online_users: onlineUsersGauge.get(), // Get the current value of the gauge
-        //   // Add more metrics here if needed
-        // };
-        // let mem = await metrics.online_users;
-        // // Convert the metrics to a literal string format
-        // const metricsString = `msg ${message} online_users ${metrics.online_users}\n`;
-        // console.log(metrics.online_users);
         client.send(message);
       }
     });
@@ -44,6 +44,10 @@ server.on('connection', (socket) => {
     userLoggedOut();
     clients.delete(socket);
   });
+});
+
+app.listen(8082, () => {
+  console.log(`Server is running on port 8082`);
 });
 
 console.log('WebSocket server is running on port 8081');
