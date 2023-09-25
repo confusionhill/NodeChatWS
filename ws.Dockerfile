@@ -1,4 +1,4 @@
-FROM node:20
+FROM node:20-buster
 
 WORKDIR /usr/src/app
 
@@ -8,6 +8,6 @@ RUN npm install
 
 COPY . .
 
-EXPOSE 8080
+EXPOSE 8081
 
-CMD ["node", "app.js"]
+CMD ["node", "server.js"]
